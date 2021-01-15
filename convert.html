@@ -1,0 +1,34 @@
+
+
+<input type="text" name="input1" id="input1" value="">
+<label>Old token value</label><small> (buy price)</small>
+</br>
+
+<input type="text" name="input2" id="input2" value=""> 
+<label>How much of this token did you buy</label>
+</br>
+
+<input type="text" name="input3" id="input3" value=""> 
+<label>New token value</label><small> (sell price)</small>
+</br></br>
+
+<input disabled type="text" name="output" id="output" value="0">
+<label>$</label>
+</br>
+
+<input disabled type="text" name="output2" id="output2" value="">
+<label>Profit</label>
+
+
+<script>
+$("#input2,#input1,#input3").keyup(function () {
+
+    
+    $('#output').val($('#input2').val() * $('#input1').val());
+    
+    
+    $('#output2').val( ($('#input2').val() * $('#input3').val()- $('#input2').val() * $('#input1').val())
+    );
+
+});
+</script>
