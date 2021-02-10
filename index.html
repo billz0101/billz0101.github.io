@@ -29,6 +29,14 @@
     Learn more: https://www.gethalfmoon.com/docs/customize/#notes-on-browser-compatibility
   -->
  <style>
+
+  #img1 {display:block;}
+
+@media all and (max-width: 499px) {
+    #img1 {display: none;}
+}
+
+
 .footer {
   position: fixed;
   left: 0;
@@ -96,9 +104,9 @@
 
     	<div class="card p-0">
                         <div class="content">
-                        	<img src="https://i.imgur.com/HVuks7v.png" height="128" width="128" style="float: right; padding: 0px 0px 0px 0px;">
+                        	<img id="img1" src="https://i.imgur.com/HVuks7v.png" height="128" width="128" style="float: right; padding: 0px 0px 0px 0px;">
                         	<div style="float: right;position: absolute; bottom: 1;right:50px;top:175px">
-                        		<button class="btn btn-primary" type="button" onclick="$('#input1').val('');$('#input2').val('');$('#input3').val('');$('#output1').val(0);$('#output2').val(0);$('#output3').val(0);">Reset
+                        		<button class="btn btn-primary" id="img1" type="button" onclick="$('#input1').val('');$('#input2').val('');$('#input3').val('');$('#output1').val(0);$('#output2').val(0);$('#output3').val(0);">Reset
                         		</button>
                         	</div>
                             <div class="w-400 mw-full">
