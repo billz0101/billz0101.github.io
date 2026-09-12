@@ -646,14 +646,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const clientSelect = document.getElementById('client-select');
   let selectedClient = clientSelect ? clientSelect.value : 'aviva';
 
-  // Multiplier = SKU trailing pack size from denzels_skus.js; falls back to a
-  // trailing number in the code (e.g. BATBITES8 -> 8), default 1.
+  // Multiplier comes only from the Denzels SKU map (denzels_skus.js).
+  // Codes not in the map get x1 — never guess from trailing digits, since
+  // non-Denzels SKUs (e.g. SOAP-LIQ500) would otherwise multiply by 500.
   function skuMultiplier(code) {
     const c = String(code || '').toUpperCase();
-    const known = window.DENZELS_SKUS[c];
-    if (known) return known;
-    const m = c.match(/(\d+)$/);
-    return m ? parseInt(m[1], 10) : 1;
+    return window.DENZELS_SKUS[c] || 1;
   }
 
   btnChooseFile.addEventListener('click', () => fileInput.click());
