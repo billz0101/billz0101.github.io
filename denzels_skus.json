@@ -1,0 +1,172 @@
+{
+  "source": "https://www.denzels.co.uk/ (products.json)",
+  "scraped_at": "2026-09-12T21:22:35.898Z",
+  "count": 33,
+  "skus": [
+    {
+      "sku": "XMASADV1",
+      "product": "Advent Calendar",
+      "multiplier": 1
+    },
+    {
+      "sku": "TRAYBCC10",
+      "product": "Carrot Cake Traybake 10-Pack",
+      "multiplier": 10
+    },
+    {
+      "sku": "VALHEARTS1",
+      "product": "Valentine's Hearts Surf & Turf Dog treats",
+      "multiplier": 1
+    },
+    {
+      "sku": "VALBOX1",
+      "product": "Valentine's Lovebites Variety Gift Box Dog Treats",
+      "multiplier": 1
+    },
+    {
+      "sku": "VALHEARTS6",
+      "product": "Valentine's Hearts Surf & Turf Dog treats 6-Pack",
+      "multiplier": 6
+    },
+    {
+      "sku": "LFPDCAP-GN",
+      "product": "Life Motto Cap",
+      "multiplier": 1
+    },
+    {
+      "sku": "COINBITES1",
+      "product": "Coins - Chicken & Pumpkin Bites",
+      "multiplier": 1
+    },
+    {
+      "sku": "SPMXBITES1",
+      "product": "Space Mix - Duck & Apple Bites",
+      "multiplier": 1
+    },
+    {
+      "sku": "LTTRBITES1",
+      "product": "Letters - Peanut Butter & Banana Bites",
+      "multiplier": 1
+    },
+    {
+      "sku": "MXTPBITES1",
+      "product": "Mixtapes - Salmon & Berries Bites",
+      "multiplier": 1
+    },
+    {
+      "sku": "SBBPB1",
+      "product": "Peanut Butter Brownie Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "SBBPC1",
+      "product": "Pistachio Cheesecake Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "SBBBM1",
+      "product": "Blueberry Muffin Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "SBBBB1",
+      "product": "Banana Bread Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "PUPCHEWS1",
+      "product": "Puppy Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "PUPPACK1",
+      "product": "Puppy Gift Box",
+      "multiplier": 1
+    },
+    {
+      "sku": "BATBITES1",
+      "product": "Battersea Hearts",
+      "multiplier": 1
+    },
+    {
+      "sku": "TRAYBCC1",
+      "product": "Carrot Cake Traybake",
+      "multiplier": 1
+    },
+    {
+      "sku": "HLWCHEWS10",
+      "product": "Toffee Apple Soft-Baked Bars 10-Pack",
+      "multiplier": 10
+    },
+    {
+      "sku": "HLWCHEWS1",
+      "product": "Toffee Apple Soft-Baked Bars",
+      "multiplier": 1
+    },
+    {
+      "sku": "VALRWDSC1",
+      "product": "Steak & Chips Love Heart Rewards",
+      "multiplier": 1
+    },
+    {
+      "sku": "DNTSMLPUP28",
+      "product": "Puppy & Small Daily Dentals 28-Pack",
+      "multiplier": 28
+    },
+    {
+      "sku": "DNTMEDVG28",
+      "product": "Medium Vegan Daily Dentals 28-Pack",
+      "multiplier": 28
+    },
+    {
+      "sku": "DNTMEDCH28",
+      "product": "Medium Chicken Daily Dentals 28-Pack",
+      "multiplier": 28
+    },
+    {
+      "sku": "BDAYGIFT1",
+      "product": "Birthday Gift Box",
+      "multiplier": 1
+    },
+    {
+      "sku": "DNTMEDVG1",
+      "product": "Medium Vegan Daily Dentals",
+      "multiplier": 1
+    },
+    {
+      "sku": "DNTMEDCH1",
+      "product": "Medium Chicken Daily Dentals",
+      "multiplier": 1
+    },
+    {
+      "sku": "DNTSMLPUP1",
+      "product": "Puppy & Small Daily Dentals",
+      "multiplier": 1
+    },
+    {
+      "sku": "RWDTA1",
+      "product": "Turkey & Apple High Value Rewards",
+      "multiplier": 1
+    },
+    {
+      "sku": "RWDDP1",
+      "product": "Duck & Plum High Value Rewards",
+      "multiplier": 1
+    },
+    {
+      "sku": "RWDCM1",
+      "product": "Chicken & Mango High Value Rewards",
+      "multiplier": 1
+    },
+    {
+      "sku": "RWDSC1",
+      "product": "Salmon & Cranberry High Value Rewards",
+      "multiplier": 1
+    },
+    {
+      "sku": "PUPBITES1",
+      "product": "Salmon & Peanut Butter Puppy Training Bites",
+      "multiplier": 1
+    }
+  ]
+}

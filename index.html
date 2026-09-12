@@ -1,269 +1,1014 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <!-- Meta tags -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
-  <meta name="viewport" content="width=device-width" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pallet Manifest Builder</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="pdf-parser.js"></script>
+<script src="denzels_skus.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- Favicon and title -->
-  <link rel="icon" href="path/to/fav.png">
-  <title>Coin Calculator</title>
+<style>
+  :root {
+    --ink: #0F172A;
+    --paper: #FFFFFF;
+    --bg-light: #F1F5F9;
+    --border: #5B82A6;
+    --border-soft: #CBD5E1;
+    --muted: #64748B;
+    --gold: #E2790A;
+    --gold-soft: #FEF5EA;
+    --header-blue: #EBF3FB;
+    --good: #2E7D46;
+    --bad: #C0392B;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-light);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 50px;
+  }
 
-	<!-- Font awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+  /* Header */
+  header.top-bar {
+    background: var(--paper);
+    border-bottom: 1px solid var(--border-soft);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+  }
 
-  <!-- Halfmoon CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon.min.css" rel="stylesheet" />
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-54XF86BY9N"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  .brandmark {
+    display: flex;
+    flex-direction: column;
+  }
 
-  gtag('config', 'G-54XF86BY9N');
-</script>
-  <!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<script>var clicky_site_ids = clicky_site_ids || []; clicky_site_ids.push(101300823);</script>
-<script async src="//static.getclicky.com/js"></script>
+  .brandmark h1 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0;
+    line-height: 1.2;
+    margin: 0;
+  }
 
+  .brandmark .sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0;
+    font-weight: 400;
+    margin-top: 3px;
+  }
 
-  <!--
-    Or,
-    Use the following (CSS file with variables):
-    <link href="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/css/halfmoon-variables.min.css" rel="stylesheet" />
-    Learn more: https://www.gethalfmoon.com/docs/customize/#notes-on-browser-compatibility
-  -->
-	<!--
-	<style>
-/* customizable snowflake styling */
-.snowflake {
-  color: #fff;
-  font-size: 1em;
-  font-family: Arial, sans-serif;
-  text-shadow: 0 0 5px #000;
-}
+  .top-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
 
-@-webkit-keyframes snowflakes-fall{0%{top:-10%}100%{top:100%}}@-webkit-keyframes snowflakes-shake{0%,100%{-webkit-transform:translateX(0);transform:translateX(0)}50%{-webkit-transform:translateX(80px);transform:translateX(80px)}}@keyframes snowflakes-fall{0%{top:-10%}100%{top:100%}}@keyframes snowflakes-shake{0%,100%{transform:translateX(0)}50%{transform:translateX(80px)}}.snowflake{position:fixed;top:-10%;z-index:9999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;-webkit-animation-name:snowflakes-fall,snowflakes-shake;-webkit-animation-duration:10s,3s;-webkit-animation-timing-function:linear,ease-in-out;-webkit-animation-iteration-count:infinite,infinite;-webkit-animation-play-state:running,running;animation-name:snowflakes-fall,snowflakes-shake;animation-duration:10s,3s;animation-timing-function:linear,ease-in-out;animation-iteration-count:infinite,infinite;animation-play-state:running,running}.snowflake:nth-of-type(0){left:1%;-webkit-animation-delay:0s,0s;animation-delay:0s,0s}.snowflake:nth-of-type(1){left:10%;-webkit-animation-delay:1s,1s;animation-delay:1s,1s}.snowflake:nth-of-type(2){left:20%;-webkit-animation-delay:6s,.5s;animation-delay:6s,.5s}.snowflake:nth-of-type(3){left:30%;-webkit-animation-delay:4s,2s;animation-delay:4s,2s}.snowflake:nth-of-type(4){left:40%;-webkit-animation-delay:2s,2s;animation-delay:2s,2s}.snowflake:nth-of-type(5){left:50%;-webkit-animation-delay:8s,3s;animation-delay:8s,3s}.snowflake:nth-of-type(6){left:60%;-webkit-animation-delay:6s,2s;animation-delay:6s,2s}.snowflake:nth-of-type(7){left:70%;-webkit-animation-delay:2.5s,1s;animation-delay:2.5s,1s}.snowflake:nth-of-type(8){left:80%;-webkit-animation-delay:1s,0s;animation-delay:1s,0s}.snowflake:nth-of-type(9){left:90%;-webkit-animation-delay:3s,1.5s;animation-delay:3s,1.5s}.snowflake:nth-of-type(10){left:25%;-webkit-animation-delay:2s,0s;animation-delay:2s,0s}.snowflake:nth-of-type(11){left:65%;-webkit-animation-delay:4s,2.5s;animation-delay:4s,2.5s}
+  .client-picker {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+  }
+  .client-picker select {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: #FFFFFF;
+    border: 1px solid var(--border-soft);
+    border-radius: 6px;
+    padding: 0.55rem 0.75rem;
+    cursor: pointer;
+  }
+  .client-picker select:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--gold-soft);
+  }
+
+  button, .btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    padding: 0.55rem 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.15s ease;
+  }
+
+  .btn-gold { background: var(--gold); color: #FFFFFF; }
+  .btn-gold:hover { filter: brightness(1.08); }
+  
+  .btn-line { background: var(--paper); color: var(--ink); border-color: var(--border-soft); }
+  .btn-line:hover { background: #F8FAFC; border-color: var(--muted); }
+
+  .btn-danger { background: transparent; color: var(--bad); border: none; font-size: 14px; padding: 2px 4px; }
+
+  /* Main Document Container */
+  .container {
+    max-width: 1220px;
+    margin: 2rem auto 0;
+    padding: 0 1rem;
+  }
+
+  .upload-box {
+    background: var(--paper);
+    border: 2px dashed var(--border-soft);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+  }
+  .upload-box.drag { border-color: var(--gold); background: var(--gold-soft); }
+  .upload-box h2 { font-size: 1.1rem; color: var(--ink); margin-bottom: 0.3rem; }
+  .upload-box p { font-size: 0.85rem; margin-bottom: 1rem; }
+  input[type=file] { display: none; }
+
+  .status-bar {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+
+  /* White Document Sheet */
+  .paper-sheet {
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 2.5rem 3rem;
+    border: 1px solid var(--border-soft);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  }
+
+  .sec-heading {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin: 1.5rem 0 0.5rem 0;
+    text-transform: uppercase;
+  }
+
+  /* ORDER DETAILS FIELDS (auto-detected, editable) */
+  .order-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: flex-end;
+    max-width: 620px;
+    margin-bottom: 1.75rem;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--border);
+    background: #FFFFFF;
+    border-radius: 6px;
+  }
+  .order-fields .field {
+    flex: 1 1 240px;
+  }
+  .order-fields label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .order-fields input {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid var(--border-soft);
+    border-radius: 5px;
+    padding: 7px 10px;
+    width: 100%;
+    background: #FFFFFF;
+  }
+  .order-fields input:focus {
+    border-color: var(--gold);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--gold-soft);
+  }
+
+  /* PICKING LIST TABLE */
+  .picking-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+  }
+  .picking-table th {
+    background: var(--header-blue);
+    color: var(--ink);
+    font-weight: 700;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+  .picking-table th.center, .picking-table td.center { text-align: center; }
+  .picking-table td {
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .picking-table tbody tr:hover { background: #F8FAFC; }
+
+  td[contenteditable=true] {
+    outline: none;
+    border-radius: 3px;
+  }
+  td[contenteditable=true]:focus {
+    background: var(--gold-soft);
+    box-shadow: 0 0 0 2px var(--gold) inset;
+  }
+
+  /* Pallet Chips */
+  .pallet-cell-wrap { min-width: 260px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .chip {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    background: var(--gold-soft);
+    border: 1px solid var(--gold);
+    color: #9A4B00;
+    font-weight: 600;
+    border-radius: 5px;
+    padding: 4px 9px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 1px 3px rgba(226, 121, 10, 0.1);
+  }
+  .chip strong {
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .chip button {
+    background: none;
+    border: none;
+    color: #A0AAB8;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    margin-left: 2px;
+  }
+  .chip button:hover { color: var(--bad); }
+
+  .pallet-add-inline {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .pallet-add-inline input {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 5px;
+    padding: 5px 8px;
+    height: 32px;
+    background: #FFFFFF;
+  }
+  .pallet-add-inline button {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    background: var(--ink);
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    height: 32px;
+  }
+
+  .balance-indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    margin-top: 5px;
+  }
+  .balance-ok { color: var(--good); }
+  .balance-bad { color: var(--bad); }
+
+  /* ENHANCED PALLET SUMMARY TABLE (Items & Specifics Separated)
+   — border-collapse: separate ensures EVERY border is owned by exactly one
+   cell. With border-collapse: collapse Chrome silently drops borders at
+   rowspan row boundaries (the per-SKU lines and the vertical line down to
+   Total Units), which is what looked broken in the export. */
+  .summary-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    /* Outer frame (top/left/right). Bottom is drawn by cells instead of the
+       ring so it never double-draws over the last row. */
+    border: 1px solid var(--border);
+    border-bottom: 0;
+  }
+  .summary-table th {
+    background: var(--header-blue);
+    color: var(--ink);
+    font-weight: 700;
+    padding: 10px 12px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-table thead th:last-child {
+    border-right: 0;
+  }
+  .summary-table td {
+    padding: 10px 12px;
+    border-right: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  /* Vertical grid lines are drawn by each cell's right border.
+     Rowspanned cells (Pallet, Total Units, Weight, Dimensions) span several
+     rows, so their right borders paint one continuous vertical line for the
+     whole pallet block — in particular the line that runs down between the
+     Specifics/Units columns and the Total Units column. */
+  .summary-table tr.pallet-start td:last-child {
+    border-right: 0; /* outer right edge comes from the table ring */
+  }
+
+  /* Horizontal per-SKU lines: every item row after the pallet's first row
+     draws a normal solid line above itself. */
+  .summary-table tbody tr:not(.pallet-start):not(.pallet-break) td {
+    border-top: 1px solid var(--border);
+  }
+
+  /* A pallet's bottom edge: the rowspanned cells paint one solid line under
+     the pallet (across the outer + rowspanned columns). */
+  .summary-table tr.pallet-start td[rowspan] {
+    border-bottom: 1px solid var(--border);
+  }
+  /* ...and the last SKU row of each pallet supplies the line under the
+     SKU/Product/Specifics/Units segment, so the pallet's bottom line runs
+     unbroken across all eight columns (incl. the table's bottom frame). */
+  .summary-table tbody tr.pu-last td:not([rowspan]) {
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Pallet break row is only shown in print/export (hidden in preview) */
+  .summary-table tr.pallet-break {
+    display: none;
+  }
+
+  /* Hide number input spinner arrows across all browsers */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .spec-input-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+  }
+  .spec-input-group input {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ink);
+    border: 1px solid var(--border-soft);
+    border-radius: 5px;
+    padding: 4px 6px;
+    height: 30px;
+    text-align: center;
+    background: #FFFFFF;
+  }
+  .spec-input-group input:focus {
+    border-color: var(--gold);
+    outline: none;
+  }
+
+  .print-only-order-banner { display: none; }
+  .print-denzels-logo { display: none; }
+  .print-val { display: none; }
+
+  /* PRINT / EXPORT MANIFEST — CLEAN EXCEL-STYLE GRID */
+  @media print {
+    @page { size: landscape; margin: 12mm; }
+
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      background: #fff !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font-family: 'Inter', Arial, sans-serif !important;
+      font-size: 8.5pt !important;
+      color: #0F172A !important;
+    }
+
+    /* Hide everything except the manifest */
+    header.top-bar, .upload-box, .status-bar,
+    .no-print, .no-print-manifest,
+    .order-fields,
+    .pallet-add-inline { display: none !important; }
+
+    .container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+    .paper-sheet { border: none !important; box-shadow: none !important; border-radius: 0 !important; }
+    td[contenteditable=true]:focus { background: none !important; box-shadow: none !important; }
+
+    /* Order Number Banner */
+    .print-only-order-banner {
+      display: block !important;
+      border: 1.5px solid #334155 !important;
+      background: #E2E8F0 !important;
+      padding: 5px 10px !important;
+      font-size: 9pt !important;
+      font-weight: 700 !important;
+      color: #0F172A !important;
+      margin: 2px 0 8px 0 !important;
+      text-align: left !important;
+      border-radius: 0 !important;
+    }
+
+    /* Denzels logo — export only, shown when the Denzels client is selected */
+    body.client-denzels .print-denzels-logo {
+      display: block !important;
+      text-align: center !important;
+      margin: 0 0 10px 0 !important;
+    }
+    body.client-denzels .print-denzels-logo img {
+      max-height: 56px !important;
+      width: auto !important;
+    }
+
+    /* Section heading */
+    #summary-section .sec-heading {
+      font-size: 9pt !important;
+      margin: 0 0 4px 0 !important;
+    }
+
+    /* Hide interactive inputs, show print text */
+    .spec-input-group { display: none !important; }
+    .print-val {
+      display: block !important;
+      font-weight: 600 !important;
+      text-align: center !important;
+      color: #0F172A !important;
+      white-space: nowrap !important;
+    }
+
+    /* ===== SUMMARY TABLE — identical to the on-screen preview =====
+       Uses border-collapse: separate so every line is owned by one cell and
+       Chrome cannot drop borders at rowspan boundaries in the export. */
+    .summary-table {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      width: 100% !important;
+      page-break-inside: auto !important;
+      border: 1px solid #5B82A6 !important;
+      border-bottom: 0 !important;
+    }
+    .summary-table thead { display: table-header-group !important; }
+    .summary-table tr { page-break-inside: avoid !important; }
+
+    /* Grid lines — same rules as the preview */
+    .summary-table th {
+      background: #EBF3FB !important;
+      border-right: 1px solid #5B82A6 !important;
+      border-bottom: 1px solid #5B82A6 !important;
+    }
+    .summary-table thead th:last-child { border-right: 0 !important; }
+    .summary-table td { border-right: 1px solid #5B82A6 !important; }
+    .summary-table tr.pallet-start td:last-child { border-right: 0 !important; }
+    .summary-table tbody tr:not(.pallet-start):not(.pallet-break) td {
+      border-top: 1px solid #5B82A6 !important;
+    }
+    .summary-table tr.pallet-start td[rowspan] {
+      border-bottom: 1px solid #5B82A6 !important;
+    }
+    .summary-table tbody tr.pu-last td:not([rowspan]) {
+      border-bottom: 1px solid #5B82A6 !important;
+    }
+
+    /* Split between pallet groups: solid dark bar spanning all columns.
+       page-break-after: avoid keeps it attached to the next pallet instead of
+       orphaned at the bottom of a page. */
+    .summary-table tr.pallet-break {
+      display: table-row !important;
+      page-break-after: avoid !important;
+      background: #0F172A !important;
+    }
+    .summary-table tr.pallet-break td {
+      height: 2px !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: #0F172A !important;
+    }
+  }
 </style>
-<div class="snowflakes" aria-hidden="true">
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❆
-  </div>
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❆
-  </div>
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❆
-  </div>
-  <div class="snowflake">
-    ❅
-  </div>
-  <div class="snowflake">
-    ❆
-  </div>
-  <div class="snowflake">
-    ❅
-  </div>
-  <div class="snowflake">
-    ❆
-  </div>
-  <div class="snowflake">
-    ❅
-  </div>
-  <div class="snowflake">
-    ❆
-  </div>
-</div>
-	-->
- <style>
-
-  #img1 {display:block;}
-  #img2 {display:none;}
-
-@media all and (max-width: 499px) {
-    #img1 {display: none;}
-    #img2 {display:block;}
-}
-
-
-.footer {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  background-color: #111417;
-  color: white;
-  text-align: center;
-  z-index: 9998!important;
-}
-
-</style>
-
-
 </head>
-<body class="with-custom-webkit-scrollbars with-custom-css-scrollbars" data-dm-shortcut-enabled="true" data-set-preferred-mode-onload="true">
-  <!-- Modals go here -->
-  <!-- Reference: https://www.gethalfmoon.com/docs/modal -->
+<body>
 
-  <!-- Page wrapper start -->
-  <div class="page-wrapper with-navbar">
+  <!-- Top Navigation -->
+  <header class="top-bar no-print">
+    <div class="brandmark">
+      <h1>Pallet Manifest Builder</h1>
+      <div class="sub">Import a pack note, allocate pallets, export the manifest.</div>
+    </div>
+    <div class="top-actions">
+      <label class="client-picker" for="client-select">
+        <span>Client</span>
+        <select id="client-select">
+          <option value="aviva" selected>Aviva</option>
+          <option value="denzels">Denzel's</option>
+        </select>
+      </label>
+      <button class="btn btn-line" id="btn-new-upload">New Manifest</button>
+      <button class="btn btn-gold" id="btn-print">Print / Save PDF Manifest</button>
+    </div>
+  </header>
 
-    <!-- Sticky alerts (toasts), empty container -->
-    <!-- Reference: https://www.gethalfmoon.com/docs/sticky-alerts-toasts -->
-    <div class="sticky-alerts"></div>
-
-    <!-- Navbar start -->
-    <nav class="navbar">
-
- <a href="#" class="navbar-brand">
-        <i class="fa fa-btc" aria-hidden="true"></i>
-         	&nbsp;Coin Calculator
-      </a>
-      <!-- Navbar text -->
-      <span class="navbar-text text-monospace">v1.0</span> <!-- text-monospace = font-family shifted to monospace -->
-	    <span>
-		    </br>
-	    		      	    <div id="img2">
-	        <button class="btn btn-action mr-5" type="button" onclick="halfmoon.toggleDarkMode()" aria-label="Toggle dark mode">
-    	<i class="fa fa-moon-o" aria-hidden="true"></i>
-    </button>
-	    </div>
-	    </span>
-      <!-- Navbar nav -->
-      <ul class="navbar-nav d-none d-md-flex"> <!-- d-none = display: none, d-md-flex = display: flex on medium screens and up (width > 768px) -->
-        <li class="nav-item active">
-          <a href="#" class="nav-link">Home</a>
-        </li>
-        <li class="nav-item">
-          <a href="#" class="nav-link">About</a>
-        </li>
-	    
-	      
-	      
-	      
-      </ul>
-	    
-	    
-
-
-    <div class="d-none d-md-flex ml-auto">
-    <button class="btn btn-action mr-5" type="button" onclick="halfmoon.toggleDarkMode()" aria-label="Toggle dark mode">
-    	<i class="fa fa-moon-o" aria-hidden="true"></i>
-    </button>
+  <div class="container">
+    
+    <!-- Upload Dropzone -->
+    <div class="upload-box no-print" id="upload-box">
+      <h2>Drop your pack note PDF here</h2>
+      <p>Picking rows, order number and date are read automatically &mdash; check and adjust them, allocate pallets, then export the manifest.</p>
+      <input type="file" id="file-input" accept="application/pdf" />
+      <button class="btn btn-gold" id="btn-choose-file">Choose PDF File</button>
     </div>
 
-    </nav>
-    <!-- Navbar end -->
+    <div class="status-bar no-print" id="status-bar"></div>
 
-    <!-- Content wrapper start -->
-    <div class="content-wrapper">
-    	<center>
-    		
-    		
-    		<h6><hr>Coin calculator helps you calculate the price if you bought a coin for <kbd>X</kbd> and want to see how much you would make if you sold at <kbd>Y</kbd>. Useful for bitcoin, ether and other alt coins<hr></h6>
-    	</center>
+    <!-- Main Light Theme Document Paper -->
+    <div class="paper-sheet" id="paper-sheet">
 
-    	<center>
+      <!-- 1. ORDER DETAILS (auto-detected, editable; exported via banner) -->
+      <div class="print-only-order-banner" id="print-order-banner"></div>
+      <div class="print-denzels-logo" id="print-denzels-logo">
+        <img src="denzels_logo.png" alt="Denzel's" />
+      </div>
 
+      <div class="sec-heading no-print">ORDER DETAILS</div>
+      <div class="order-fields">
+        <div class="field">
+          <label for="order-number-input">Order Number</label>
+          <input id="order-number-input" type="text" placeholder="Auto-detected" spellcheck="false" />
+        </div>
+        <div class="field">
+          <label for="order-date-input">Date</label>
+          <input id="order-date-input" type="text" placeholder="Auto-detected" spellcheck="false" />
+        </div>
+      </div>
 
+      <!-- 2. PICKING LIST TABLE (Hidden on Manifest PDF Export) -->
+      <div class="no-print-manifest">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="sec-heading">PICKING LIST</div>
+          <button class="btn btn-line no-print" id="btn-add-row" style="padding:3px 8px; font-size:0.75rem;">+ Add row</button>
+        </div>
 
-    	<div class="card p-0">
-                        <div class="content">
-                        	<img id="img1" src="https://i.imgur.com/HVuks7v.png" height="128" width="128" style="float: right; padding: 0px 0px 0px 0px;">
-                        	<div style="float: right;position: absolute; bottom: 1;right:50px;top:175px">
-                        		<button class="btn btn-primary" id="img1" type="button" onclick="$('#input1').val('');$('#input2').val('');$('#input3').val('');$('#output1').val(0);$('#output2').val(0);$('#output3').val(0);">Reset
-                        		</button>
-                        	</div>
-                            <div class="w-400 mw-full">
+        <table class="picking-table">
+          <thead>
+            <tr>
+              <th style="width:15%;">StockCode</th>
+              <th style="width:25%;" class="center">Product Name</th>
+              <th style="width:20%;" class="center">Specifics</th>
+              <th style="width:10%;" class="center">Location</th>
+              <th style="width:7%;" class="center">QTY</th>
+              <th style="width:23%;" class="center">Pallet</th>
+              <th class="no-print" style="width:30px;"></th>
+            </tr>
+          </thead>
+          <tbody id="manifest-body">
+            <!-- Injected dynamically -->
+          </tbody>
+        </table>
+      </div>
 
+      <!-- 3. ENHANCED PALLET SUMMARY TABLE (Items & Specifics Separated) -->
+      <div id="summary-section" style="margin-top:1.5rem;">
+        <!-- Injected dynamically -->
+      </div>
 
-    		<!-- Normal input -->
-		<small>(entry)</small><input type="text" name="input1" id="input1" class="form-control" placeholder="What rate did you buy the coin at" value="">
-		</br>
+    </div>
 
-		<small>(coins)</small><input type="text" name="input2" id="input2" class="form-control" placeholder="How much of this coin did you buy" value="">
-		</br>
-
-		<small>(exit)</small><input type="text" name="input3" id="input3" class="form-control" placeholder="What rate will you sell the coin at" value="">
-		</br>
-
-
-		<!-- Read-only input -->
-		<small>(you spent)</small><input type="text" name="output1" id="output1" class="form-control"  readonly="readonly" value="0">
-
-		<small>(you made)</small><input type="text" name="output2" id="output2" class="form-control"  readonly="readonly" value="0">
-
-		<small>(your profit <bold>$</bold>)</small><input type="text" name="output3" id="output3" class="form-control" readonly="readonly" value="0">
-
-                            </div>
-                        </div>
-                    </div>
-
-
-</center>
-
-
-    <div class="footer">
-	    <p>billz#8652</p>
-	</div>
+  </div>
 
 <script>
-$("#input1, #input2, #input3").keyup(function () {
+document.addEventListener('DOMContentLoaded', () => {
 
-    
-    $('#output1').val( ($('#input2').val() * $('#input1').val()).toFixed(2)); // how much you spent
-    
-    $('#output2').val( ($('#input2').val() * $('#input3').val()).toFixed(2)); // how much you made
+  const uploadBox = document.getElementById('upload-box');
+  const fileInput = document.getElementById('file-input');
+  const btnChooseFile = document.getElementById('btn-choose-file');
+  const btnNewUpload = document.getElementById('btn-new-upload');
+  const btnPrint = document.getElementById('btn-print');
+  const statusBar = document.getElementById('status-bar');
+  const manifestBody = document.getElementById('manifest-body');
+  const summarySection = document.getElementById('summary-section');
+  const btnAddRow = document.getElementById('btn-add-row');
+  const orderNumberInput = document.getElementById('order-number-input');
+  const orderDateInput = document.getElementById('order-date-input');
+  const printOrderBanner = document.getElementById('print-order-banner');
 
-    $('#output3').val( ($('#input2').val() * $('#input3').val() - $('#input2').val() * $('#input1').val()).toFixed(2) // profit
-    );
-    $('#output3').css("font-weight","Bold");
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  let manifestRows = [];
+  let palletSpecs = {}; // { "1": { weight: "40", length: "120", width: "100", height: "110" } }
+  let rowSeq = 1;
+
+  const clientSelect = document.getElementById('client-select');
+  let selectedClient = clientSelect ? clientSelect.value : 'aviva';
+
+  // Multiplier = SKU trailing pack size from denzels_skus.js; falls back to a
+  // trailing number in the code (e.g. BATBITES8 -> 8), default 1.
+  function skuMultiplier(code) {
+    const c = String(code || '').toUpperCase();
+    const known = window.DENZELS_SKUS[c];
+    if (known) return known;
+    const m = c.match(/(\d+)$/);
+    return m ? parseInt(m[1], 10) : 1;
+  }
+
+  btnChooseFile.addEventListener('click', () => fileInput.click());
+  btnNewUpload.addEventListener('click', () => {
+    manifestRows = [];
+    palletSpecs = {};
+    orderNumberInput.value = '';
+    orderDateInput.value = '';
+    syncOrderBanner();
+    statusBar.textContent = 'Start over — drop a pack note PDF below or add rows manually.';
+    fileInput.value = '';
+    uploadBox.style.display = 'block';
+    renderManifest();
+  });
+
+  btnPrint.addEventListener('click', () => window.print());
+
+  function applyClientBodyClass() {
+    document.body.classList.toggle('client-denzels', selectedClient === 'denzels');
+  }
+  applyClientBodyClass();
+
+  clientSelect.addEventListener('change', () => {
+    selectedClient = clientSelect.value;
+    applyClientBodyClass();
+    renderSummary();
+  });
+
+  function syncOrderBanner() {
+    const on = orderNumberInput.value.trim();
+    const dt = orderDateInput.value.trim();
+    printOrderBanner.innerHTML = 'ORDER NUMBER: ' + escapeHtml(on || '—') + ' &nbsp;&nbsp;|&nbsp;&nbsp; DATE: ' + escapeHtml(dt || '—');
+  }
+  orderNumberInput.addEventListener('input', syncOrderBanner);
+  orderDateInput.addEventListener('input', syncOrderBanner);
+
+  // Bind once: the "Add row" button is static across renders, so re-binding it
+  // inside attachHandlers() would stack listeners and add multiple rows per click.
+  btnAddRow.addEventListener('click', () => {
+    manifestRows.push({ id: rowSeq++, stockCode: '', productName: '', specifics: '', batch: '', expiry: '', location: '', qty: '', pallets: [] });
+    renderManifest();
+  });
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  ;['dragover','dragleave','drop'].forEach(evt => {
+    uploadBox.addEventListener(evt, (e) => {
+      e.preventDefault();
+      if (evt === 'dragover') uploadBox.classList.add('drag');
+      if (evt === 'dragleave') uploadBox.classList.remove('drag');
+      if (evt === 'drop') {
+        uploadBox.classList.remove('drag');
+        if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+      }
+    });
+  });
+
+  async function handleFile(file) {
+    statusBar.textContent = 'Reading ' + file.name + '...';
+    try {
+      const buf = await file.arrayBuffer();
+      const parsed = await PdfExtractor.parsePdfBuffer(buf);
+      manifestRows = parsed.map(r => {
+        const be = PdfExtractor.extractBatchExpiry(r.specifics || '');
+        return {
+          id: rowSeq++,
+          stockCode: r.stockCode || '',
+          productName: r.productName || '',
+          specifics: r.specifics || '',
+          batch: be.batch,
+          expiry: be.expiry,
+          location: r.location || '',
+          qty: r.qty || '',
+          pallets: []
+        };
+      });
+      statusBar.textContent = `Parsed ${manifestRows.length} item(s) from the PDF.`;
+      orderNumberInput.value = (parsed.meta && parsed.meta.orderNumber) || '';
+      orderDateInput.value = (parsed.meta && parsed.meta.orderDate) || '';
+      syncOrderBanner();
+      uploadBox.style.display = 'none';
+      renderManifest();
+    } catch (err) {
+      console.error(err);
+      statusBar.textContent = 'Couldn\'t read that PDF (' + err.message + '). Try another pack note.';
+    }
+  }
+
+  function extractBatchExpiry(specifics) {
+    return PdfExtractor.extractBatchExpiry(specifics || '');
+  }
+
+  // Render Table & Summary
+  function renderManifest() {
+    manifestBody.innerHTML = manifestRows.map(r => rowToHTML(r)).join('');
+    renderSummary();
+    attachHandlers();
+  }
+
+  function rowToHTML(r) {
+    const allocated = r.pallets.reduce((s, p) => s + Number(p.qty || 0), 0);
+    const total = Number(r.qty || 0);
+    const balanced = r.pallets.length > 0 && allocated === total;
+    const over = allocated > total;
+
+    const chipHtml = r.pallets.map((p, i) => `
+      <span class="chip">
+        <strong>${p.qty} units</strong> on Pallet ${p.pallet}
+        <button data-remove-pallet="${r.id}:${i}" title="Remove allocation">&times;</button>
+      </span>
+    `).join('');
+
+    const balanceHtml = r.pallets.length === 0
+      ? `<div class="balance-indicator balance-bad">0/${total} units allocated &mdash; ${total} units remaining</div>`
+      : `<div class="balance-indicator ${balanced ? 'balance-ok' : 'balance-bad'}">${allocated}/${total} units allocated${balanced ? ' &mdash; balanced' : (over ? ' &mdash; over by ' + (allocated - total) + ' units' : ' &mdash; remaining ' + (total - allocated) + ' units')}</div>`;
+
+    return `
+    <tr data-row="${r.id}">
+      <td class="mono" contenteditable="true" data-field="stockCode">${escapeHtml(r.stockCode)}</td>
+      <td contenteditable="true" data-field="productName">${escapeHtml(r.productName)}</td>
+      <td contenteditable="true" data-field="specifics">${escapeHtml(r.specifics)}</td>
+      <td class="mono center" contenteditable="true" data-field="location">${escapeHtml(r.location)}</td>
+      <td class="mono center" contenteditable="true" data-field="qty" style="font-weight:700;">${escapeHtml(r.qty)}</td>
+      <td class="pallet-cell-wrap">
+        <div class="chips">${chipHtml}</div>
+        ${balanceHtml}
+        <div class="pallet-add-inline no-print">
+          <input type="number" placeholder="Qty" data-pallet-qty="${r.id}" style="width: 70px;" />
+          <span style="font-weight:600; color:var(--muted);">&times;</span>
+          <input type="text" placeholder="Pallet #" data-pallet-num="${r.id}" style="width: 85px;" />
+          <button data-add-pallet="${r.id}">+ Add</button>
+        </div>
+      </td>
+      <td class="no-print" style="text-align:center;"><button class="btn-danger" data-remove-row="${r.id}">&times;</button></td>
+    </tr>`;
+  }
+
+  // ENHANCED PALLET SUMMARY TABLE (Separate "Items Loaded" and "Specifics" columns)
+  function renderSummary() {
+    const denzels = selectedClient === 'denzels';
+    const pMap = {};
+    manifestRows.forEach(r => {
+      r.pallets.forEach(p => {
+        const k = p.pallet || '(unassigned)';
+        if (!pMap[k]) pMap[k] = { items: [], totalUnits: 0 };
+        const mult = denzels ? skuMultiplier(r.stockCode) : 1;
+        pMap[k].items.push({ 
+          stockCode: r.stockCode, 
+          productName: r.productName,
+          specifics: r.specifics,
+          batch: r.batch,
+          expiry: r.expiry,
+          qty: p.qty,
+          subTotal: mult * Number(p.qty)
+        });
+        pMap[k].totalUnits += denzels ? mult * Number(p.qty) : Number(p.qty);
+      });
+    });
+
+    // SORT NUMERICALLY FROM SMALLEST NUMBER TO LARGEST NUMBER (1, 2, 3, 4, 5...)
+    const keys = Object.keys(pMap).sort((a, b) => {
+      const na = parseFloat(a), nb = parseFloat(b);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      return a.localeCompare(b, undefined, { numeric: true });
+    });
+
+    if (keys.length === 0) {
+      summarySection.innerHTML = '';
+      return;
+    }
+
+    const rowsHtml = keys.map((k, ki) => {
+      const data = pMap[k];
+      const spec = palletSpecs[k] || { weight: '', length: '', width: '', height: '' };
+      const numItems = data.items.length;
+      const colCount = denzels ? 10 : 9;
+      const palletBreak = ki > 0
+        ? '<tr class="pallet-break"><td colspan="' + colCount + '"></td></tr>'
+        : '';
+
+      const weightPrintVal = spec.weight ? spec.weight + ' kg' : '—';
+      const dimPrintVal = (spec.length && spec.width && spec.height)
+        ? spec.length + ' × ' + spec.width + ' × ' + spec.height + ' cm'
+        : '—';
+
+      const calcCube = (sp) => {
+        const l = parseFloat(sp.length), w = parseFloat(sp.width), h = parseFloat(sp.height);
+        if (!isNaN(l) && !isNaN(w) && !isNaN(h) && l > 0 && w > 0 && h > 0) {
+          return (l * w * h) / 1000000;
+        }
+        return null;
+      };
+      const cubeVal = calcCube(spec);
+      const cubePrintVal = cubeVal !== null ? cubeVal.toFixed(2) + ' m³' : '—';
+
+      const weightHtml = `
+        <div class="spec-input-group">
+          <input type="number" placeholder="kg" value="${escapeHtml(spec.weight)}" data-spec-weight="${k}" style="width:75px;" />
+          <span style="font-size:0.8rem; font-weight:500; color:var(--muted);">kg</span>
+        </div>
+        <div class="print-val">${weightPrintVal}</div>`;
+
+      const dimHtml = `
+        <div class="spec-input-group">
+          <input type="number" placeholder="L" value="${escapeHtml(spec.length)}" data-spec-length="${k}" style="width:55px;" /> &times;
+          <input type="number" placeholder="W" value="${escapeHtml(spec.width)}" data-spec-width="${k}" style="width:55px;" /> &times;
+          <input type="number" placeholder="H" value="${escapeHtml(spec.height)}" data-spec-height="${k}" style="width:55px;" />
+          <span style="font-size:0.8rem; font-weight:500; color:var(--muted);">cm</span>
+        </div>
+        <div class="print-val">${dimPrintVal}</div>`;
+
+      return data.items.map((item, idx) => {
+        const isLastItem = idx === numItems - 1;
+        if (idx === 0) {
+          return palletBreak + `
+            <tr class="pallet-start${isLastItem ? ' pu-last' : ''}">
+              <td rowspan="${numItems}" style="font-weight:bold; width:90px; vertical-align:middle;">Pallet ${escapeHtml(k)}</td>
+              <td style="width:120px;" class="mono"><strong>${escapeHtml(item.stockCode)}</strong></td>
+              <td style="width:150px;">${escapeHtml(item.productName || '—')}</td>
+              <td style="width:180px;">${escapeHtml(item.specifics || (item.batch ? 'Batch:' + item.batch + (item.expiry ? ' Exp:' + item.expiry : '') : 'N/A'))}</td>
+              <td style="text-align:center; font-weight:bold; width:65px;" class="mono">${item.qty}</td>
+              ${denzels ? `<td style="text-align:center; font-weight:bold; width:65px;" class="mono">${item.subTotal}</td>` : ''}
+              <td rowspan="${numItems}" class="col-total-units mono" style="text-align:center; font-weight:bold; width:90px; vertical-align:middle;">${data.totalUnits}</td>
+              <td rowspan="${numItems}" style="width:115px; vertical-align:middle; text-align:center;">${weightHtml}</td>
+              <td rowspan="${numItems}" style="width:220px; vertical-align:middle; text-align:center;">${dimHtml}</td>
+              <td rowspan="${numItems}" class="mono" style="width:100px; vertical-align:middle; text-align:center; font-weight:600;"><span data-cube-val="${k}">${cubePrintVal}</span></td>
+            </tr>
+          `;
+        } else {
+          return `
+            <tr${isLastItem ? ' class="pu-last"' : ''}>
+              <td style="width:120px;" class="mono"><strong>${escapeHtml(item.stockCode)}</strong></td>
+              <td style="width:150px;">${escapeHtml(item.productName || '—')}</td>
+              <td style="width:180px;">${escapeHtml(item.specifics || (item.batch ? 'Batch:' + item.batch + (item.expiry ? ' Exp:' + item.expiry : '') : 'N/A'))}</td>
+              <td style="text-align:center; font-weight:bold; width:65px;" class="mono">${item.qty}</td>
+              ${denzels ? `<td style="text-align:center; font-weight:bold; width:65px;" class="mono">${item.subTotal}</td>` : ''}
+            </tr>
+          `;
+        }
+      }).join('');
+    }).join('');
+
+    summarySection.innerHTML = `
+      <div class="sec-heading">PALLET SUMMARY &amp; SPECIFICATIONS</div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th style="width:90px;">Pallet</th>
+            <th style="width:120px;">SKU</th>
+            <th style="width:150px;">Product Name</th>
+            <th style="width:180px;">Specifics (Batch / Expiry)</th>
+            <th style="text-align:center; width:65px;">Units</th>
+            ${denzels ? '<th style="text-align:center; width:65px;">Sub-Total Units</th>' : ''}
+            <th style="text-align:center; width:90px;">Total Units</th>
+            <th style="width:115px;">Weight</th>
+            <th style="width:220px;">Dimensions (L &times; W &times; H)</th>
+            <th style="text-align:center; width:100px;">Cube (m&sup3;)</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    `;
+
+    keys.forEach(k => {
+      ['weight', 'length', 'width', 'height'].forEach(field => {
+        const inp = summarySection.querySelector(`[data-spec-${field}="${k}"]`);
+        if (inp) {
+          inp.addEventListener('input', (e) => {
+            if (!palletSpecs[k]) palletSpecs[k] = { weight: '', length: '', width: '', height: '' };
+            palletSpecs[k][field] = e.target.value;
+            // Update print-val siblings in real-time
+            const spec = palletSpecs[k];
+            const cell = inp.closest('td');
+            const printDiv = cell ? cell.querySelector('.print-val') : null;
+            if (printDiv) {
+              if (field === 'weight') {
+                printDiv.textContent = spec.weight ? spec.weight + ' kg' : '—';
+              } else {
+                printDiv.textContent = (spec.length && spec.width && spec.height)
+                  ? spec.length + ' × ' + spec.width + ' × ' + spec.height + ' cm' : '—';
+              }
+            }
+            if (field !== 'weight') {
+              const cubeSpan = summarySection.querySelector(`[data-cube-val="${k}"]`);
+              if (cubeSpan) {
+                const l = parseFloat(spec.length), w = parseFloat(spec.width), h = parseFloat(spec.height);
+                const c = (!isNaN(l) && !isNaN(w) && !isNaN(h) && l > 0 && w > 0 && h > 0)
+                  ? (l * w * h) / 1000000 : null;
+                cubeSpan.textContent = c !== null ? c.toFixed(2) + ' m³' : '—';
+              }
+            }
+          });
+        }
+      });
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function attachHandlers() {
+    document.querySelectorAll('td[contenteditable]').forEach(td => {
+      td.addEventListener('blur', () => {
+        const tr = td.closest('tr');
+        const id = Number(tr.dataset.row);
+        const field = td.dataset.field;
+        const row = manifestRows.find(r => r.id === id);
+        if (row) row[field] = td.textContent.trim();
+        if (row && field === 'specifics') {
+          const be = extractBatchExpiry(row.specifics);
+          row.batch = be.batch;
+          row.expiry = be.expiry;
+        }
+        if (field === 'qty') renderManifest();
+      });
+    });
+
+    document.querySelectorAll('[data-add-pallet]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.addPallet);
+        const qtyInput = document.querySelector(`[data-pallet-qty="${id}"]`);
+        const numInput = document.querySelector(`[data-pallet-num="${id}"]`);
+        const qty = qtyInput.value.trim();
+        const num = numInput.value.trim();
+        if (!num || !qty || isNaN(Number(qty))) return;
+        const row = manifestRows.find(r => r.id === id);
+        row.pallets.push({ pallet: num, qty: Number(qty) });
+        renderManifest();
+      });
+    });
+
+    document.querySelectorAll('[data-remove-pallet]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const [id, idx] = btn.dataset.removePallet.split(':').map(Number);
+        const row = manifestRows.find(r => r.id === id);
+        row.pallets.splice(idx, 1);
+        renderManifest();
+      });
+    });
+
+    document.querySelectorAll('[data-remove-row]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.dataset.removeRow);
+        manifestRows = manifestRows.filter(r => r.id !== id);
+        renderManifest();
+      });
+    });
+  }
 
 });
 </script>
-<center><p>| donate ❤️: <bold>BTC</bold> - 1CjeZ5mppEiR9TGHWgeHD1WTfogcDL7BUa | <bold>ETH</bold> - 0xa9475dfb93e96d26583b4c3c97a525be0d3abe09 |</p></small>
-<div id="img1">
-<center>
-	<small> If you want free amazon prime for 30 days (cancel any time) or you were going to shop on Amazon anyway, please do it through our links to support me, thanks.</small>
-	<iframe src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=48&l=ur1&category=primemain&banner=17T0MQR5WKGJCZNRHCG2&f=ifr&linkID=3de7ab3102adc9c34b12e96b51539b64&t=billz101-20&tracking_id=billz101-20" width="728" height="90" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
-	</br>
-<iframe src="//rcm-na.amazon-adsystem.com/e/cm?o=1&p=13&l=ez&f=ifr&linkID=50619fb0617afb0f4c14fc3e59726ee8&t=billz101-20&tracking_id=billz101-20" width="468" height="60" scrolling="no" border="0" marginwidth="0" style="border:none;" frameborder="0"></iframe>
-	
-	</center>
-	</br> </br></br></br>
-	<script type="text/javascript">
-    amzn_assoc_ad_type = "link_enhancement_widget";
-    amzn_assoc_tracking_id = "billz101-20";
-    amzn_assoc_linkid = "{{link_id}}";
-    amzn_assoc_placement = "";
-    amzn_assoc_marketplace = "amazon";
-    amzn_assoc_region = "US";
-</script>
-
-<script src="//ws-na.amazon-adsystem.com/widgets/q?ServiceVersion=20070822&Operation=GetScript&ID=OneJS&WS=1&MarketPlace=US"></script>
-</div> <!-- id1 div end -->
-
-    </div>
-    <!-- Content wrapper end -->
-  </div>
-  <!-- Page wrapper end -->
-
-  <!-- Halfmoon JS -->
-  <script src="https://cdn.jsdelivr.net/npm/halfmoon@1.1.1/js/halfmoon.min.js"></script>
 </body>
 </html>
